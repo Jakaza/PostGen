@@ -58,14 +58,16 @@ class PostgreSQLGenerator:
             'DECIMAL': 'DECIMAL(10,2)',
             'FLOAT': 'REAL',
             'UUID': 'UUID',
-            'JSON': 'JSONB'
+            'JSON': 'JSONB',
+            'VARCHAR(50)': 'VARCHAR(50)',
+            'VARCHAR(100)': 'VARCHAR(100)'
         }
     
     def map_data_type(self, field_type: str) -> str:
         """Map frontend data types to PostgreSQL types"""
         return self.type_mapping.get(field_type, 'TEXT')
     
-    def generate_table_sql(self, table: Table, tables_dict: Dict[int, Table]) -> str:
+    def generate_table_sql(self, table: Table, tables_dict: Dict[int, Table], relationships: List[Relationship]) -> str:
         """Generate CREATE TABLE SQL for a single table"""
         sql_lines = [f"CREATE TABLE {table.name} ("]
         
@@ -96,8 +98,20 @@ class PostgreSQLGenerator:
                     if referenced_field:
                         fk_constraint = f"    FOREIGN KEY ({field.name}) REFERENCES {referenced_table.name}({referenced_field.name})"
                         foreign_key_constraints.append(fk_constraint)
+
+            elif field.isForeignKey:
+                for rel in relationships:
+                    if rel.fromTable == table.id and rel.fromField == field.id:
+                        referenced_table = tables_dict.get(rel.toTable)
+                        if referenced_table:
+                            referenced_field = next(
+                                (f for f in referenced_table.fields if f.id == rel.toField),
+                                None
+                            )
+                            if referenced_field:
+                                fk_constraint = f"    FOREIGN KEY ({field.name}) REFERENCES {referenced_table.name}({referenced_field.name})"
+                                foreign_key_constraints.append(fk_constraint)
         
-        # Combine field definitions and constraints
         all_definitions = field_definitions + foreign_key_constraints
         sql_lines.append(",\n".join(all_definitions))
         sql_lines.append(");")
