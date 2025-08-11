@@ -450,7 +450,7 @@ function TableDesigner() {
         ) : (
           /* Diagram View */
         <>
-            <h1>Diagram View Here</h1>
+            <h1>Diagram View Here (coming soon still under development)</h1>
         </>
         )}
       </div>
