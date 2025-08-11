@@ -128,6 +128,18 @@ function TableDesigner() {
     });
   };
 
+    const removeRelationship = (relationshipId) => {
+    const relationship = relationships.find(r => r.id === relationshipId);
+    if (relationship) {
+      updateField(relationship.fromTable, relationship.fromField, {
+        isForeignKey: false,
+        referencesTable: null,
+        referencesField: null
+      });
+    }
+    setRelationships(relationships.filter(r => r.id !== relationshipId));
+  };
+
 
   const selectedTableData = tables.find(t => t.id === selectedTable);
 
