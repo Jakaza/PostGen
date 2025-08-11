@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Plus, Trash2, Link, Database, Edit2, Save, X, Eye, Settings, Layout } from 'lucide-react';
 import RelationshipForm from '../components/RelationshipForm';
-
+const apiUrl = import.meta.env.VITE_API_URL;
 
 function TableDesigner() {
   const [tables, setTables] = useState([]);
@@ -169,12 +169,43 @@ function TableDesigner() {
         exportButton.disabled = true;
       }
       // Send data to backend (server)
+      const response = await fetch(`${apiUrl}/export-schema`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ tables: schema.tables , relationships: schema.relationships}),
+      });
 
-      console.log( JSON.stringify(schema));
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Export failed');
+      }
+
+      // Get the filename from response headers
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let filename = 'database_schema.sql';
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename="(.+)"/);
+        if (filenameMatch) {
+          filename = filenameMatch[1];
+        }
+      }
       
-
+      // Create blob and download
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+      
       alert('PostgreSQL schema file downloaded successfully!');
-      
+
+  
     } catch (error) {
       console.error('Export error:', error);
       alert(`Export failed: ${error.message}`);
