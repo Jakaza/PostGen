@@ -1,5 +1,9 @@
 # PostGen — Database Schema Designer & Exporter
 
+Live Demo: [https://postgresql-gen.vercel.app/](https://postgresql-gen.vercel.app/)
+
+Backend API: [https://postgen-8fgh.onrender.com/](https://postgen-8fgh.onrender.com/)
+
 [![Frontend](https://img.shields.io/badge/Frontend-ReactJS-blue)](https://github.com/Jakaza/PostGen/tree/main/frontend)  
 [![Backend](https://img.shields.io/badge/Backend-FastAPI-green)](https://github.com/Jakaza/PostGen/tree/main/backend)
 
