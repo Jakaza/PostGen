@@ -101,6 +101,14 @@ function TableDesigner() {
     ));
   };
 
+    const deleteField = (tableId, fieldId) => {
+    setTables(tables.map(t => 
+      t.id === tableId 
+        ? { ...t, fields: t.fields.filter(f => f.id !== fieldId) }
+        : t
+    ));
+  };
+
 
   const selectedTableData = tables.find(t => t.id === selectedTable);
 
