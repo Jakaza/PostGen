@@ -109,6 +109,25 @@ function TableDesigner() {
     ));
   };
 
+    const addRelationship = (fromTableId, fromFieldId, toTableId, toFieldId) => {
+    const newRelationship = {
+      id: Date.now(),
+      fromTable: fromTableId,
+      fromField: fromFieldId,
+      toTable: toTableId,
+      toField: toFieldId
+    };
+    
+    setRelationships([...relationships, newRelationship]);
+    
+    // Update the field to mark it as foreign key
+    updateField(fromTableId, fromFieldId, {
+      isForeignKey: true,
+      referencesTable: toTableId,
+      referencesField: toFieldId
+    });
+  };
+
 
   const selectedTableData = tables.find(t => t.id === selectedTable);
 
