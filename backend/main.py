@@ -6,6 +6,7 @@ from typing import List, Optional, Dict, Any
 import tempfile
 import os
 from datetime import datetime
+from models import Field, Table, Relationship, SchemaRequest
 
 app = FastAPI(title="Database Schema Exporter", version="1.0.0")
 
@@ -17,35 +18,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Pydantic models for request validation
-class Field(BaseModel):
-    id: int
-    name: str
-    type: str
-    isPrimary: bool = False
-    isRequired: bool = False
-    isForeignKey: bool = False
-    referencesTable: Optional[int] = None
-    referencesField: Optional[int] = None
-
-class Table(BaseModel):
-    id: int
-    name: str
-    fields: List[Field]
-
-class Relationship(BaseModel):
-    id: int
-    fromTable: int
-    fromField: int
-    toTable: int
-    toField: int
-
-class SchemaRequest(BaseModel):
-    tables: List[Table]
-    relationships: List[Relationship]
-    tablePositions: Optional[Dict[str, Any]] = None
-
 class PostgreSQLGenerator:
     def __init__(self):
         self.type_mapping = {
