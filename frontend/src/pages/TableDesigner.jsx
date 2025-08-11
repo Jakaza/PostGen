@@ -57,6 +57,12 @@ function TableDesigner() {
     }
   };
 
+    const updateTableName = (tableId, newName) => {
+    setTables(tables.map(t => 
+      t.id === tableId ? { ...t, name: newName } : t
+    ));
+    setEditingTable(null);
+  };
 
 
 
