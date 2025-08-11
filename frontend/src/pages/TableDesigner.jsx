@@ -87,6 +87,19 @@ function TableDesigner() {
     ));
   };
 
+  
+  const updateField = (tableId, fieldId, updates) => {
+    setTables(tables.map(t => 
+      t.id === tableId 
+        ? {
+            ...t,
+            fields: t.fields.map(f => 
+              f.id === fieldId ? { ...f, ...updates } : f
+            )
+          }
+        : t
+    ));
+  };
 
 
   const selectedTableData = tables.find(t => t.id === selectedTable);
