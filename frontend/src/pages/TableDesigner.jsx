@@ -64,6 +64,29 @@ function TableDesigner() {
     setEditingTable(null);
   };
 
+    const addField = (tableId) => {
+    setTables(tables.map(t => 
+      t.id === tableId 
+        ? {
+            ...t,
+            fields: [
+              ...t.fields,
+              {
+                id: Date.now(),
+                name: 'new_field',
+                type: 'VARCHAR(255)',
+                isPrimary: false,
+                isRequired: false,
+                isForeignKey: false,
+                referencesTable: null,
+                referencesField: null
+              }
+            ]
+          }
+        : t
+    ));
+  };
+
 
 
   const selectedTableData = tables.find(t => t.id === selectedTable);
