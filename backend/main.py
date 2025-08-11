@@ -7,6 +7,7 @@ import tempfile
 import os
 from datetime import datetime
 from models import Field, Table, Relationship, SchemaRequest
+from fastapi.responses import HTMLResponse
 
 app = FastAPI(title="Database Schema Exporter", version="1.0.0")
 
@@ -191,10 +192,6 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
         return "\n".join(sql_parts)
   
 
-@app.get("/")
-async def root():
-    return {"message": "Database Schema Exporter API", "status": "running"}
-
 @app.post("/export-schema")
 async def export_schema(schema_request: SchemaRequest):
     """
@@ -286,6 +283,169 @@ async def validate_schema(schema_request: SchemaRequest):
 @app.get("/health")
 async def health_check():
     return {"status": "healthy", "timestamp": datetime.now().isoformat()}
+
+@app.get("/", response_class=HTMLResponse)
+async def home():
+    sample_json = """
+{
+  "tables": [
+    {
+      "id": 1,
+      "name": "users",
+      "fields": [
+        { "id": 1, "name": "id", "type": "INTEGER", "isPrimary": true, "isRequired": true, "isForeignKey": false },
+        { "id": 2, "name": "email", "type": "VARCHAR(255)", "isPrimary": false, "isRequired": true, "isForeignKey": false },
+        { "id": 3, "name": "password", "type": "VARCHAR(255)", "isPrimary": false, "isRequired": true, "isForeignKey": false },
+        { "id": 4, "name": "created_at", "type": "TIMESTAMP", "isPrimary": false, "isRequired": true, "isForeignKey": false }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "posts",
+      "fields": [
+        { "id": 5, "name": "id", "type": "INTEGER", "isPrimary": true, "isRequired": true, "isForeignKey": false },
+        { "id": 6, "name": "user_id", "type": "INTEGER", "isPrimary": false, "isRequired": true, "isForeignKey": true },
+        { "id": 7, "name": "title", "type": "VARCHAR(255)", "isPrimary": false, "isRequired": true, "isForeignKey": false },
+        { "id": 8, "name": "content", "type": "TEXT", "isPrimary": false, "isRequired": true, "isForeignKey": false }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "comments",
+      "fields": [
+        { "id": 9, "name": "id", "type": "INTEGER", "isPrimary": true, "isRequired": true, "isForeignKey": false },
+        { "id": 10, "name": "post_id", "type": "INTEGER", "isPrimary": false, "isRequired": true, "isForeignKey": true },
+        { "id": 11, "name": "user_id", "type": "INTEGER", "isPrimary": false, "isRequired": true, "isForeignKey": true },
+        { "id": 12, "name": "body", "type": "TEXT", "isPrimary": false, "isRequired": true, "isForeignKey": false }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "categories",
+      "fields": [
+        { "id": 13, "name": "id", "type": "INTEGER", "isPrimary": true, "isRequired": true, "isForeignKey": false },
+        { "id": 14, "name": "name", "type": "VARCHAR(100)", "isPrimary": false, "isRequired": true, "isForeignKey": false }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "products",
+      "fields": [
+        { "id": 15, "name": "id", "type": "INTEGER", "isPrimary": true, "isRequired": true, "isForeignKey": false },
+        { "id": 16, "name": "category_id", "type": "INTEGER", "isPrimary": false, "isRequired": true, "isForeignKey": true },
+        { "id": 17, "name": "name", "type": "VARCHAR(255)", "isPrimary": false, "isRequired": true, "isForeignKey": false },
+        { "id": 18, "name": "price", "type": "DECIMAL(10,2)", "isPrimary": false, "isRequired": true, "isForeignKey": false }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "orders",
+      "fields": [
+        { "id": 19, "name": "id", "type": "INTEGER", "isPrimary": true, "isRequired": true, "isForeignKey": false },
+        { "id": 20, "name": "user_id", "type": "INTEGER", "isPrimary": false, "isRequired": true, "isForeignKey": true },
+        { "id": 21, "name": "order_date", "type": "TIMESTAMP", "isPrimary": false, "isRequired": true, "isForeignKey": false },
+        { "id": 22, "name": "status", "type": "VARCHAR(50)", "isPrimary": false, "isRequired": true, "isForeignKey": false }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "order_items",
+      "fields": [
+        { "id": 23, "name": "id", "type": "INTEGER", "isPrimary": true, "isRequired": true, "isForeignKey": false },
+        { "id": 24, "name": "order_id", "type": "INTEGER", "isPrimary": false, "isRequired": true, "isForeignKey": true },
+        { "id": 25, "name": "product_id", "type": "INTEGER", "isPrimary": false, "isRequired": true, "isForeignKey": true },
+        { "id": 26, "name": "quantity", "type": "INTEGER", "isPrimary": false, "isRequired": true, "isForeignKey": false }
+      ]
+    }
+  ],
+  "relationships": [
+    { "id": 1, "fromTable": 2, "fromField": 6, "toTable": 1, "toField": 1 },
+    { "id": 2, "fromTable": 3, "fromField": 10, "toTable": 2, "toField": 5 },
+    { "id": 3, "fromTable": 3, "fromField": 11, "toTable": 1, "toField": 1 },
+    { "id": 4, "fromTable": 5, "fromField": 16, "toTable": 4, "toField": 13 },
+    { "id": 5, "fromTable": 6, "fromField": 20, "toTable": 1, "toField": 1 },
+    { "id": 6, "fromTable": 7, "fromField": 24, "toTable": 6, "toField": 19 },
+    { "id": 7, "fromTable": 7, "fromField": 25, "toTable": 5, "toField": 15 }
+  ]
+}
+    """
+    html_content = f"""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <title>Database Schema Exporter</title>
+      <style>
+        body {{
+          font-family: Arial, sans-serif;
+          margin: 2rem;
+          background: #f9f9f9;
+          color: #333;
+        }}
+        h1 {{
+          color: #0078D7;
+        }}
+        pre {{
+          background: #272822;
+          color: #f8f8f2;
+          padding: 1rem;
+          border-radius: 6px;
+          max-height: 400px;
+          overflow: auto;
+          white-space: pre-wrap;
+          word-wrap: break-word;
+          user-select: all;
+        }}
+        a.button {{
+          display: inline-block;
+          margin: 1rem 0;
+          padding: 0.5rem 1rem;
+          background-color: #0078D7;
+          color: white;
+          text-decoration: none;
+          border-radius: 4px;
+          font-weight: bold;
+        }}
+        a.button:hover {{
+          background-color: #005ea1;
+        }}
+        button.copy-btn {{
+          margin: 0.5rem 0 1rem 0;
+          padding: 0.5rem 1rem;
+          background-color: #28a745;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          font-weight: bold;
+        }}
+        button.copy-btn:hover {{
+          background-color: #1e7e34;
+        }}
+      </style>
+    </head>
+    <body style="margin: 25px">
+      <h1>Database Schema Exporter</h1>
+      <a href="/docs" class="button" target="_blank" style="color: white" rel="noopener">Open API Docs (Swagger UI)</a>
+      <h2>Sample JSON Schema (copy below and try on /docs)</h2>
+      <button class="copy-btn" onclick="copySampleJson()">Copy JSON to Clipboard</button>
+      <pre id="sample-json">{sample_json}</pre>
+      <script>
+        function copySampleJson() {{
+          const pre = document.getElementById('sample-json');
+          const text = pre.innerText;
+          navigator.clipboard.writeText(text).then(() => {{
+            alert('Sample JSON copied to clipboard!');
+          }}, () => {{
+            alert('Failed to copy JSON.');
+          }});
+        }}
+      </script>
+    </body>
+    </html>
+    """
+    return HTMLResponse(content=html_content, status_code=200)
+
 
 if __name__ == "__main__":
     import uvicorn
