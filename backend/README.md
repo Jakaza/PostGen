@@ -74,7 +74,7 @@ This project provides a backend API to:
 
 3. Install dependencies:
    ``` bash
-    pip install -r requirements.txt
+    pip install fastapi uvicorn pydantic python-multipart
     ```
 
 4. Start the server:
