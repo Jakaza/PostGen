@@ -19,7 +19,7 @@ function TableDesigner() {
     'DATE', 'DECIMAL', 'FLOAT', 'UUID', 'JSON'
   ];
 
-    const addTable = () => {
+  const addTable = () => {
     if (!newTableName.trim()) return;
     
     const newTable = {
@@ -43,6 +43,24 @@ function TableDesigner() {
       }
     }));
   };
+
+    const deleteTable = (tableId) => {
+    setTables(tables.filter(t => t.id !== tableId));
+    setRelationships(relationships.filter(r => r.fromTable !== tableId && r.toTable !== tableId));
+    setTablePositions(prev => {
+      const newPos = { ...prev };
+      delete newPos[tableId];
+      return newPos;
+    });
+    if (selectedTable === tableId) {
+      setSelectedTable(null);
+    }
+  };
+
+
+
+
+  const selectedTableData = tables.find(t => t.id === selectedTable);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
