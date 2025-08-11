@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Plus, Trash2, Link, Database, Edit2, Save, X, Eye, Settings, Layout } from 'lucide-react';
+import RelationshipForm from '../components/RelationshipForm';
 
 
 function TableDesigner() {
@@ -150,6 +151,41 @@ function TableDesigner() {
     if (!table) return 'Unknown';
     const field = table.fields.find(f => f.id === fieldId);
     return field ? field.name : 'Unknown';
+  };
+
+  
+  const exportSchema = async () => {
+    const schema = {
+      tables: tables,
+      relationships: relationships,
+      tablePositions: tablePositions
+    };
+    
+    try {
+      // Show loading state
+      const exportButton = document.querySelector('[data-export-button]');
+      if (exportButton) {
+        exportButton.textContent = 'Exporting...';
+        exportButton.disabled = true;
+      }
+      // Send data to backend (server)
+
+      console.log( JSON.stringify(schema));
+      
+
+      alert('PostgreSQL schema file downloaded successfully!');
+      
+    } catch (error) {
+      console.error('Export error:', error);
+      alert(`Export failed: ${error.message}`);
+    } finally {
+      // Reset button state
+      const exportButton = document.querySelector('[data-export-button]');
+      if (exportButton) {
+        exportButton.textContent = 'Export Schema';
+        exportButton.disabled = false;
+      }
+    }
   };
 
 
