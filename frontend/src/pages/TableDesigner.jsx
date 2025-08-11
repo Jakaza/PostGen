@@ -140,6 +140,18 @@ function TableDesigner() {
     setRelationships(relationships.filter(r => r.id !== relationshipId));
   };
 
+    const getTableName = (tableId) => {
+    const table = tables.find(t => t.id === tableId);
+    return table ? table.name : 'Unknown';
+  };
+
+  const getFieldName = (tableId, fieldId) => {
+    const table = tables.find(t => t.id === tableId);
+    if (!table) return 'Unknown';
+    const field = table.fields.find(f => f.id === fieldId);
+    return field ? field.name : 'Unknown';
+  };
+
 
   const selectedTableData = tables.find(t => t.id === selectedTable);
 
