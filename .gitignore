@@ -1,0 +1,94 @@
+# =========================
+# Backend (FastAPI / Python)
+# =========================
+backend/__pycache__/
+backend/**/*.py[cod]
+backend/*$py.class
+
+# Virtual environment
+backend/.env
+backend/.venv/
+backend/env/
+backend/venv/
+
+# Environment variables
+backend/*.env
+backend/*.env.*
+
+# Distribution / packaging
+backend/build/
+backend/dist/
+backend/*.egg-info/
+backend/.eggs/
+
+# Logs
+backend/*.log
+
+# PyInstaller
+backend/*.manifest
+backend/*.spec
+
+# Unit test / coverage reports
+backend/htmlcov/
+backend/.tox/
+backend/.nox/
+backend/.coverage
+backend/.coverage.*
+backend/.cache
+backend/nosetests.xml
+backend/coverage.xml
+backend/*.cover
+backend/*.py,cover
+
+# mypy / type checker
+backend/.mypy_cache/
+backend/.dmypy.json
+backend/dmypy.json
+
+# Pyre type checker
+backend/.pyre/
+
+# Pytype
+backend/.pytype/
+
+# VS Code settings
+backend/.vscode/
+
+# =========================
+# Frontend (React + Vite / Node)
+# =========================
+frontend/node_modules/
+
+# Build output
+frontend/dist/
+frontend/build/
+
+# Vite cache
+frontend/.vite/
+frontend/vite.config.ts.timestamp-*
+
+# Logs
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
+
+# Local env files
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+
+# Editor settings
+frontend/.idea/
+frontend/*.suo
+frontend/*.ntvs*
+frontend/*.njsproj
+frontend/*.sln
+frontend/*.sw?
+
+# =========================
+# OS-specific files
+# =========================
+.DS_Store
+Thumbs.db
