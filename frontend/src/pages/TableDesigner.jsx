@@ -267,6 +267,34 @@ function TableDesigner() {
     }
   }, [draggedTable, dragOffset]);
 
+    // Calculate connection lines between tables
+  const getConnectionPath = (fromTableId, fromFieldId, toTableId, toFieldId) => {
+    const fromPos = tablePositions[fromTableId];
+    const toPos = tablePositions[toTableId];
+    
+    if (!fromPos || !toPos) return '';
+    
+    const fromTable = tables.find(t => t.id === fromTableId);
+    const toTable = tables.find(t => t.id === toTableId);
+    
+    if (!fromTable || !toTable) return '';
+    
+    const fromFieldIndex = fromTable.fields.findIndex(f => f.id === fromFieldId);
+    const toFieldIndex = toTable.fields.findIndex(f => f.id === toFieldId);
+    
+    // Calculate connection points
+    const fromX = fromPos.x + 250; // Right side of from table
+    const fromY = fromPos.y + 40 + (fromFieldIndex * 28) + 14; // Field position
+    
+    const toX = toPos.x; // Left side of to table
+    const toY = toPos.y + 40 + (toFieldIndex * 28) + 14; // Field position
+    
+    // Create a curved connection line
+    const midX = (fromX + toX) / 2;
+    
+    return `M ${fromX} ${fromY} C ${fromX + 50} ${fromY}, ${toX - 50} ${toY}, ${toX} ${toY}`;
+  };
+
 
     // Diagram Table Component
   const DiagramTable = ({ table, position, isSelected, onClick }) => (
