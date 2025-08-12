@@ -1,0 +1,14 @@
+name: Ping Website Every Hour
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'  # Every 30 minutes
+  workflow_dispatch:     # Optional: manual trigger
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send request to website
+        run: |
+          curl --silent --show-error --fail https://jakaza.vercel.app/ || echo "Ping failed"
