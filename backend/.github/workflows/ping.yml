@@ -11,4 +11,4 @@ jobs:
     steps:
       - name: Send request to website
         run: |
-          curl --silent --show-error --fail https://jakaza.vercel.app/ || echo "Ping failed"
+          curl --silent --show-error --fail https://postgen-8fgh.onrender.com/ || echo "Ping failed"
