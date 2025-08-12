@@ -480,9 +480,128 @@ function TableDesigner() {
           </div>
         ) : (
           /* Diagram View */
-        <>
-            <h1>Diagram View Here (coming soon still under development)</h1>
-        </>
+        <div className="bg-white rounded-xl shadow-lg p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold text-gray-800">Database Diagram</h2>
+              <div className="text-sm text-gray-600">
+                Drag tables to rearrange • Click tables to select
+              </div>
+            </div>
+            
+            <div
+              ref={diagramRef}
+              className="relative bg-gray-50 rounded-lg border-2 border-dashed border-gray-300 overflow-hidden"
+              style={{ height: '600px', minHeight: '600px' }}
+            >
+              {/* SVG for connection lines */}
+              <svg
+                className="absolute top-0 left-0 w-full h-full pointer-events-none"
+                style={{ zIndex: 0 }}
+              >
+                {relationships.map((rel) => (
+                  <path
+                    key={rel.id}
+                    d={getConnectionPath(rel.fromTable, rel.fromField, rel.toTable, rel.toField)}
+                    stroke="#3b82f6"
+                    strokeWidth="2"
+                    fill="none"
+                    markerEnd="url(#arrowhead)"
+                  />
+                ))}
+                {/* Arrow marker definition */}
+                <defs>
+                  <marker
+                    id="arrowhead"
+                    markerWidth="10"
+                    markerHeight="7"
+                    refX="9"
+                    refY="3.5"
+                    orient="auto"
+                  >
+                    <polygon
+                      points="0 0, 10 3.5, 0 7"
+                      fill="#3b82f6"
+                    />
+                  </marker>
+                </defs>
+              </svg>
+
+              {/* Tables */}
+              {tables.map((table) => {
+                const position = tablePositions[table.id] || { x: 100, y: 100 };
+                return (
+                  <DiagramTable
+                    key={table.id}
+                    table={table}
+                    position={position}
+                    isSelected={selectedTable === table.id}
+                    onClick={setSelectedTable}
+                  />
+                );
+              })}
+
+              {/* Empty state */}
+              {tables.length === 0 && (
+                <div className="absolute inset-0 flex items-center justify-center text-gray-500">
+                  <div className="text-center">
+                    <Database className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+                    <p className="text-lg font-medium">No tables yet</p>
+                    <p className="text-sm">Add a table above to get started</p>
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            {/* Selected Table Details in Diagram View */}
+            {selectedTableData && (
+              <div className="mt-6 bg-gray-50 rounded-lg p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-lg font-semibold text-gray-800">
+                    {selectedTableData.name} Fields
+                  </h3>
+                  <button
+                    onClick={() => addField(selectedTable)}
+                    className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm flex items-center gap-1"
+                  >
+                    <Plus className="w-3 h-3" />
+                    Add Field
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {selectedTableData.fields.map(field => (
+                    <div key={field.id} className="bg-white p-3 rounded border">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          {field.isPrimary && (
+                            <div className="w-2 h-2 bg-yellow-400 rounded-full" />
+                          )}
+                          {field.isForeignKey && (
+                            <Link className="w-3 h-3 text-blue-500" />
+                          )}
+                          <span className={`text-sm ${field.isPrimary ? 'font-semibold' : ''}`}>
+                            {field.name}
+                          </span>
+                        </div>
+                        <button
+                          onClick={() => deleteField(selectedTable, field.id)}
+                          className="p-1 text-gray-400 hover:text-red-600"
+                          disabled={field.isPrimary}
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      </div>
+                      <div className="text-xs text-gray-500">{field.type}</div>
+                      {field.isForeignKey && (
+                        <div className="text-xs text-blue-600 mt-1">
+                          → {getTableName(field.referencesTable)}.{getFieldName(field.referencesTable, field.referencesField)}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         )}
       </div>
     </div>

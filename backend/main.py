@@ -144,9 +144,6 @@ class PostgreSQLGenerator:
 -- - Indexes for performance
 -- - Comments for documentation
 
--- Enable UUID extension if needed
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
 """
         sql_parts.append(header)
         
